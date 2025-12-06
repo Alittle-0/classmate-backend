@@ -3,12 +3,12 @@ package com.devteam.identityservice.exception;
 import lombok.Getter;
 
 @Getter
-public class BussinessException extends RuntimeException {
+public class BusinessException extends RuntimeException {
 
     private final ErrorCode errorCode;
     private final Object[] args;
 
-    public BussinessException(final ErrorCode errorCode, final Object... args) {
+    public BusinessException(final ErrorCode errorCode, final Object... args) {
         super(getFormatterMessage(errorCode, args));
         this.errorCode = errorCode;
         this.args = args;

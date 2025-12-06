@@ -4,7 +4,7 @@ import com.devteam.identityservice.request.PasswordChangeRequest;
 import com.devteam.identityservice.request.ProfileUpdateRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserServiceInterface extends UserDetailsService {
+public interface AuthenticationServiceInterface extends UserDetailsService {
 
     void updateProfileInformation(ProfileUpdateRequest request, String userId);
 

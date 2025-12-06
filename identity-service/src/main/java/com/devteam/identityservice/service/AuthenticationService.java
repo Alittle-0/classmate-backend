@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserService implements UserServiceInterface {
+public class AuthenticationService implements AuthenticationServiceInterface {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -84,9 +84,9 @@ public class UserService implements UserServiceInterface {
 //    Not use this
     @Override
     public void deleteAccount(String userId) {
-        final User user = findUserById(userId);
-
-        this.userRepository.delete(user);
+//        final User user = findUserById(userId);
+//
+//        this.userRepository.delete(user);
     }
 
 }

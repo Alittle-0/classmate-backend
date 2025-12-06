@@ -1,4 +1,4 @@
-package com.devteam.identityservice.service;
+package com.devteam.identityservice.request;
 
 import lombok.*;
 
