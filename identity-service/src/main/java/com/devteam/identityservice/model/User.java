@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,16 +19,21 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@Builder
+@ToString
 @Table(name = "USERS")
+@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "FULL_NAME", nullable = false)
-    private String fullName;
+    @Column(name = "FIRST_NAME", nullable = false)
+    private String firstName;
+
+    @Column(name = "LAST_NAME", nullable = false)
+    private String lastName;
 
 //    @Column(name = "PROFILE_PICTURE", nullable = false)
 //    private String profilePicture = "https://www.gravatar.com/avatar/";
@@ -38,10 +44,10 @@ public class User implements UserDetails {
     @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "DATE_OF_BIRTH", nullable = false)
+    @Column(name = "DATE_OF_BIRTH", nullable = true)
     private LocalDate dateOfBirth;
 
-    @Column(name = "USERNAME", nullable = false, unique = true)
+    @Column(name = "USERNAME", nullable = true, unique = true)
     private String username;
 
     @Column(name = "PASSWORD", nullable = false)
@@ -51,24 +57,30 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    @Builder.Default
     @Column(name = "IS_ENABLED", nullable = false)
     private boolean enabled = true;
 
+    @Builder.Default
     @Column(name = "IS_LOCKED", nullable = false)
     private boolean locked = false;
 
+    @Builder.Default
     @Column(name = "IS_CREDENTIALS_EXPIRED", nullable = false)
     private boolean expired = false;
 
+    @Builder.Default
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean active = false;
 
+    @Builder.Default
     @Column(name = "CREDENTIALS_EXPIRED", nullable = false)
     private boolean credentialsExpired = false;
 
 //    @Column(name = "IS_PHONE_VERIFIED", nullable = false)
 //    private boolean phoneVerified = false;
 
+    @Builder.Default
     @Column(name = "IS_EMAIL_VERIFIED", nullable = false)
     private boolean emailVerified = false;
 
@@ -115,4 +127,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
+
 }
