@@ -1,76 +1,57 @@
 package com.devteam.identityservice.controller;
 
-import com.devteam.identityservice.model.User;
-import com.devteam.identityservice.request.PasswordChangeRequest;
-import com.devteam.identityservice.request.ProfileUpdateRequest;
+
+import com.devteam.identityservice.dto.AuthenticationRequestDTO;
+import com.devteam.identityservice.dto.AuthenticationResponseDTO;
+import com.devteam.identityservice.dto.RefreshRequest;
+import com.devteam.identityservice.dto.RegistrationRequestDTO;
 import com.devteam.identityservice.service.AuthenticationService;
-import com.devteam.identityservice.service.AuthenticationServiceInterface;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/v1/identity")
-@RequiredArgsConstructor
-@Tag(name = "User", description = "Identify Service")
+@RequestMapping("/api/v1/identity/auth")
+@Tag(name = "Authentication", description = "Identity - Authentication service")
 public class AuthenticationController {
 
+    final AuthenticationService authenticationService;
+
     @Autowired
-    private final AuthenticationServiceInterface authenticationService;
-
-//    Health API
-    @GetMapping("health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("API is healthy");
-
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
-    @PatchMapping("me")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateProfileInformation(
-            @RequestBody @Valid final ProfileUpdateRequest request,
-            final Authentication principal
-            ) {
-        this.authenticationService.updateProfileInformation(request, getUserId(principal));
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponseDTO> login(
+            @Valid
+            @RequestBody
+            final AuthenticationRequestDTO requestDTO) {
+        System.out.println(requestDTO);
+        return ResponseEntity.ok(this.authenticationService.login(requestDTO));
     }
 
-    @PostMapping("me/password")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void changePassword(
-            @RequestBody @Valid final PasswordChangeRequest request,
-            final Authentication principal
-            ) {
-        this.authenticationService.changePassword(request, getUserId(principal));
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void register(
+            @Valid
+            @RequestBody
+            final RegistrationRequestDTO requestDTO) {
+        System.out.println(requestDTO);
+        this.authenticationService.register(requestDTO);
     }
 
-    @PostMapping("me/deactivate")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deactivateAccount(
-            final Authentication principal
-            ) {
-        this.authenticationService.deactiveAccount(getUserId(principal));
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponseDTO> refresh(
+            @Valid
+            @RequestBody
+            final RefreshRequest request) {
+        return ResponseEntity.ok(this.authenticationService.refreshToken(request));
     }
-
-    @PostMapping("me/reactivate")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void reactiveAccount(final Authentication principal) {
-        this.authenticationService.reactivateAccount(getUserId(principal));
-    }
-
-    @DeleteMapping("me/delete")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deleteAccount(final Authentication principal) {
-        this.authenticationService.deleteAccount(getUserId(principal));
-    }
-
-    private String getUserId(Authentication principal) {
-        return ((User) principal.getPrincipal()).getId();
-    }
-
 
 }

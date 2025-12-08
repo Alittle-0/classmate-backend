@@ -1,0 +1,52 @@
+### POST first user role student
+POST http://localhost:8081/api/v1/identity/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Michael",
+  "lastName": "Dang",
+  "email": "abc@gmail.com",
+  "role": "STUDENT",
+  "password": "Test123456789@_",
+  "confirmPassword": "Test123456789@_"
+}
+
+### POST second user role student
+POST http://localhost:8081/api/v1/identity/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Phi Hùng",
+  "lastName": "Đặng",
+  "email": "xyz@gmail.com",
+  "role": "STUDENT",
+  "password": "Test123456789@_",
+  "confirmPassword": "Test123456789@_"
+}
+
+### POST first user role teacher
+POST http://localhost:8081/api/v1/identity/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Michael",
+  "lastName": "Dang",
+  "email": "teacher.1@gmail.com",
+  "role": "TEACHER",
+  "password": "Test123456789@_",
+  "confirmPassword": "Test123456789@_"
+}
+
+### POST second user role teacher
+POST http://localhost:8081/api/v1/identity/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Michael",
+  "lastName": "Dang",
+  "email": "teacher2@gmail.com",
+  "role": "TEACHER",
+  "password": "Test123456789@_",
+  "confirmPassword": "Test123456789@_"
+}
+

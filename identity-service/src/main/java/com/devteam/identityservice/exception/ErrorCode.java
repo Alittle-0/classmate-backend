@@ -10,11 +10,20 @@ public enum ErrorCode {
 
     CHANGE_PASSWORD_MISMATCH("CHANGE_PASSWORD_MISMATCH", "New password mismatch confirm password", HttpStatus.BAD_REQUEST),
 
+    PASSWORD_MISMATCH("PASSWORD_MISMATCH", "Password mismatch confirm password", HttpStatus.BAD_REQUEST),
+
     INVALID_CURRENT_PASSWORD("INVALID_CURRENT_PASSWORD", "Mismatching current password", HttpStatus.BAD_REQUEST),
 
     ACCOUNT_ALREADY_ACTIVATED("ACCOUNT_ALREADY_ACTIVATED", "Account with id %s is already activated", HttpStatus.BAD_REQUEST),
 
-    ACCOUNT_ALREADY_DEACTIVATED("ACCOUNT_ALREADY_DEACTIVATED", "Account with id %s is already deactivated", HttpStatus.BAD_REQUEST);
+    ACCOUNT_ALREADY_DEACTIVATED("ACCOUNT_ALREADY_DEACTIVATED", "Account with id %s is already deactivated", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_EXISTS("EMAIL_ALREADY_EXISTS", "Email already exists", HttpStatus.BAD_REQUEST),
+    INVALID_ROLE("INVALID_ROLE", "Invalid role", HttpStatus.BAD_REQUEST),
+    ERROR_USER_DISABLE("ERROR_USER_DISABLE", "User is disable", HttpStatus.UNAUTHORIZED),
+    BAD_CREDENTIALS("BAD_CREDENTIALS", "Email and / or password is incorrect", HttpStatus.UNAUTHORIZED),
+    USERNAME_NOT_FOUND("USERNAME_NOT_FOUND", "username not found", HttpStatus.NOT_FOUND),
+    INTERNAL_EXCEPTION("INTERNAL_EXCEPTION", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
+    ;
 
     private final String code;
     private final String defaultMessage;

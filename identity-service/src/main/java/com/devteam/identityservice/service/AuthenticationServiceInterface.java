@@ -1,19 +1,16 @@
 package com.devteam.identityservice.service;
 
-import com.devteam.identityservice.request.PasswordChangeRequest;
-import com.devteam.identityservice.request.ProfileUpdateRequest;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.devteam.identityservice.dto.AuthenticationRequestDTO;
+import com.devteam.identityservice.dto.AuthenticationResponseDTO;
+import com.devteam.identityservice.dto.RefreshRequest;
+import com.devteam.identityservice.dto.RegistrationRequestDTO;
 
-public interface AuthenticationServiceInterface extends UserDetailsService {
+public interface AuthenticationServiceInterface {
 
-    void updateProfileInformation(ProfileUpdateRequest request, String userId);
+    AuthenticationResponseDTO login(AuthenticationRequestDTO requestDTO);
 
-    void changePassword(PasswordChangeRequest request, String userId);
+    void register(RegistrationRequestDTO requestDTO);
 
-    void deactiveAccount(String userId);
-
-    void reactivateAccount(String userId);
-
-    void deleteAccount(String userId);
+    AuthenticationResponseDTO refreshToken(RefreshRequest request);
 
 }
