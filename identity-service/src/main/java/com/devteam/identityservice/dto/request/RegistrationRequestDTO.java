@@ -1,6 +1,7 @@
 package com.devteam.identityservice.dto;
 
 import com.devteam.identityservice.model.Role;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -23,7 +24,7 @@ public class RegistrationRequestDTO {
             regexp = "^[\\p{L} '-]+$"
     )
     @Schema(example = "Michael")
-    private String firstName;
+    private String firstname;
 
     @NotBlank(message = "VALIDATION.REGISTRATION.LASTNAME.NOT_BLANK")
     @Size(
@@ -35,15 +36,15 @@ public class RegistrationRequestDTO {
             regexp = "^[\\p{L} '-]+$"
     )
     @Schema(example = "Dang")
-    private String lastName;
+    private String lastname;
 
     @NotBlank(message = "VALIDATION.REGISTRATION.EMAIL.NOT_BLANK")
     @Email(message = "VALIDATION.REGISTRATION.EMAIL.FORMAT")
     @Schema(example = "abc@gmail.com")
     private String email;
 
-//    @NotNull(message = "VALIDATION.REGISTRATION.ROLE.NOT_NULL")
-//    @Schema(allowableValues = {"ADMIN", "STUDENT", "TEACHER"})
+    @NotNull(message = "VALIDATION.REGISTRATION.ROLE.NOT_NULL")
+    @Schema(allowableValues = {"ADMIN", "STUDENT", "TEACHER"})
     private Role role;
 
     @NotBlank(message = "VALIDATION.REGISTRATION.PASSWORD.NOT_BLANK")

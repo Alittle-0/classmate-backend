@@ -26,7 +26,7 @@ public class ProfileUpdateRequestDTO {
             regexp = "^[\\p{L} '-]+$"
     )
     @Schema(example = "Michael")
-    private String firstName;
+    private String firstname;
 
     @NotBlank(message = "VALIDATION.UPDATE_INFORMATION.LASTNAME.NOT_BLANK")
     @Size(
@@ -38,12 +38,11 @@ public class ProfileUpdateRequestDTO {
             regexp = "^[\\p{L} '-]+$"
     )
     @Schema(example = "Dang")
-    private String lastName;
+    private String lastname;
 
     @NotBlank(message = "VALIDATION.UPDATE_INFORMATION.EMAIL.NOT_BLANK")
     @Email(message = "VALIDATION.UPDATE_INFORMATION.EMAIL.FORMAT")
     @Schema(example = "abc@gmail.com")
     private String email;
-//    private LocalDate dateOfBirth;
 
 }
