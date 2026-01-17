@@ -1,16 +1,11 @@
-package com.devteam.identityservice.dto;
+package com.devteam.identityservice.dto.request;
 
+import com.devteam.identityservice.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -40,9 +35,8 @@ public class ProfileUpdateRequestDTO {
     @Schema(example = "Dang")
     private String lastname;
 
-    @NotBlank(message = "VALIDATION.UPDATE_INFORMATION.EMAIL.NOT_BLANK")
-    @Email(message = "VALIDATION.UPDATE_INFORMATION.EMAIL.FORMAT")
-    @Schema(example = "abc@gmail.com")
-    private String email;
+    @NotNull(message = "VALIDATION.UPDATE_INFORMATION.ROLE.NOT_NULL")
+    @Schema(example = "STUDENT")
+    private Role role;
 
 }

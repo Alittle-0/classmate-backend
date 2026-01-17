@@ -1,6 +1,6 @@
 package com.devteam.identityservice.exception;
 
-import com.devteam.identityservice.dto.ErrorResponseDTO;
+import com.devteam.identityservice.dto.response.ErrorResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -107,5 +107,4 @@ public class ApplicationExceptionHandler {
                         .getStatus())
                 .body(body);
     }
-
 }

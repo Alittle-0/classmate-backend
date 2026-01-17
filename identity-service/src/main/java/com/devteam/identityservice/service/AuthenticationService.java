@@ -1,17 +1,18 @@
 package com.devteam.identityservice.service;
 
-import com.devteam.identityservice.dto.AuthenticationRequestDTO;
-import com.devteam.identityservice.dto.AuthenticationResponseDTO;
-import com.devteam.identityservice.dto.RefreshRequest;
-import com.devteam.identityservice.dto.RegistrationRequestDTO;
+import com.devteam.identityservice.dto.request.AuthenticationRequestDTO;
+import com.devteam.identityservice.dto.response.AuthenticationResponseDTO;
+import com.devteam.identityservice.dto.request.RegistrationRequestDTO;
 import com.devteam.identityservice.exception.BusinessException;
 import com.devteam.identityservice.exception.ErrorCode;
 import com.devteam.identityservice.model.Role;
 import com.devteam.identityservice.model.User;
 import com.devteam.identityservice.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,23 +36,30 @@ public class AuthenticationService implements AuthenticationServiceInterface{
     }
 
     @Override
-    public AuthenticationResponseDTO login(AuthenticationRequestDTO requestDTO) {
+    public AuthenticationResponseDTO login(AuthenticationRequestDTO requestDTO, HttpServletResponse response) {
 
         final Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(requestDTO.getEmail(), requestDTO.getPassword())
         );
 
         final User user = (User) authentication.getPrincipal();
-        System.out.println(user);
-        final String accessToken = this.jwtService.generateAccessToken(user.getUsername());
-        System.out.println(accessToken);
+        final String accessToken = this.jwtService.generateAccessToken(user);
         final String refreshToken = this.jwtService.generateRefreshToken(user.getUsername());
-        System.out.println(refreshToken);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+            .httpOnly(true)
+            .secure(false)
+            .sameSite("Lax")
+            .path("/")
+            .build();
+
+        // Add cookie to response
+        response.addHeader("Set-Cookie", cookie.toString());
+
         final String tokenType = "Bearer";
 
         return AuthenticationResponseDTO.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .tokenType(tokenType)
                 .build();
     }
@@ -70,12 +78,21 @@ public class AuthenticationService implements AuthenticationServiceInterface{
     }
 
     @Override
-    public AuthenticationResponseDTO refreshToken(RefreshRequest request) {
-        final String newAccessToken = this.jwtService.refreshAccessToken(request.getRefreshToken());
+    public AuthenticationResponseDTO refreshToken(String refreshToken, HttpServletResponse response) {
+        final String newAccessToken = this.jwtService.refreshAccessToken(refreshToken);
+
+        // Keep the refresh token in cookie
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+            .httpOnly(true)
+            .secure(false)
+            .sameSite("Lax")
+            .path("/")
+            .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+
         final String tokenType = "Bearer";
         return AuthenticationResponseDTO.builder()
                 .accessToken(newAccessToken)
-                .refreshToken(request.getRefreshToken())
                 .tokenType(tokenType).build();
     }
 
@@ -95,6 +112,20 @@ public class AuthenticationService implements AuthenticationServiceInterface{
         if (role == Role.ADMIN)
             throw new BusinessException(ErrorCode.INVALID_ROLE);
 
+    }
+
+    @Override
+    public void logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(false)
+            .sameSite("Lax")
+            .path("/")
+            .maxAge(0)
+            .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+        log.info("User logged out successfully, refresh token cookie cleared");
     }
 
 }

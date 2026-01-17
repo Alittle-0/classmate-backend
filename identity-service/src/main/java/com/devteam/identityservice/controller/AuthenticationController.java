@@ -1,15 +1,13 @@
 package com.devteam.identityservice.controller;
 
 
-import com.devteam.identityservice.dto.AuthenticationRequestDTO;
-import com.devteam.identityservice.dto.AuthenticationResponseDTO;
-import com.devteam.identityservice.dto.RefreshRequest;
-import com.devteam.identityservice.dto.RegistrationRequestDTO;
+import com.devteam.identityservice.dto.request.AuthenticationRequestDTO;
+import com.devteam.identityservice.dto.response.AuthenticationResponseDTO;
+import com.devteam.identityservice.dto.request.RegistrationRequestDTO;
 import com.devteam.identityservice.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +29,9 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponseDTO> login(
             @Valid
             @RequestBody
-            final AuthenticationRequestDTO requestDTO) {
-        System.out.println(requestDTO);
-        return ResponseEntity.ok(this.authenticationService.login(requestDTO));
+            final AuthenticationRequestDTO requestDTO,
+            final HttpServletResponse response) {
+        return ResponseEntity.ok(this.authenticationService.login(requestDTO, response));
     }
 
     @PostMapping("/register")
@@ -42,16 +40,22 @@ public class AuthenticationController {
             @Valid
             @RequestBody
             final RegistrationRequestDTO requestDTO) {
-        System.out.println(requestDTO);
         this.authenticationService.register(requestDTO);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthenticationResponseDTO> refresh(
-            @Valid
-            @RequestBody
-            final RefreshRequest request) {
-        return ResponseEntity.ok(this.authenticationService.refreshToken(request));
+            @CookieValue(name = "refreshToken", required = true)
+            final String refreshToken,
+            final HttpServletResponse response) {
+        System.out.println("Refresh token: " + refreshToken);
+        return ResponseEntity.ok(this.authenticationService.refreshToken(refreshToken, response));
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(final HttpServletResponse response) {
+        this.authenticationService.logout(response);
     }
 
 }

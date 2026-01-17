@@ -1,4 +1,4 @@
-package com.devteam.identityservice.common;
+package com.devteam.academicservice.common;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

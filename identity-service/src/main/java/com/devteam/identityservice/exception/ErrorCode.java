@@ -23,6 +23,10 @@ public enum ErrorCode {
     BAD_CREDENTIALS("BAD_CREDENTIALS", "Email and / or password is incorrect", HttpStatus.UNAUTHORIZED),
     USERNAME_NOT_FOUND("USERNAME_NOT_FOUND", "username not found", HttpStatus.NOT_FOUND),
     INTERNAL_EXCEPTION("INTERNAL_EXCEPTION", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
+    TOKEN_EXPIRED("TOKEN_EXPIRED", "Token has expired", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN("INVALID_TOKEN", "Invalid token", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN_TYPE("INVALID_TOKEN_TYPE", "Invalid token type. Expected %s but got %s", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_EXPIRED("REFRESH_TOKEN_EXPIRED", "Refresh token has expired", HttpStatus.UNAUTHORIZED),
     ;
 
     private final String code;

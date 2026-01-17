@@ -9,4 +9,5 @@ public interface AssignmentRepository extends JpaRepository<Assignment, String> 
 
     List<Assignment> findAllByCourseId(String courseId);
 
+    boolean existsByTitleIgnoreCase(String title);
 }

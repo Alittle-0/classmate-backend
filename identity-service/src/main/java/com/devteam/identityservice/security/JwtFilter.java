@@ -1,6 +1,8 @@
 package com.devteam.identityservice.security;
 
+import com.devteam.identityservice.exception.BusinessException;
 import com.devteam.identityservice.service.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,7 +19,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -56,33 +60,45 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        final String jwt;
-        final String username;
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
-        username = this.jwtService.extractUsername(jwt);
+        final String jwt = authHeader.substring(7);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        try {
+            final String username = this.jwtService.extractUsername(jwt);
 
-            if (this.jwtService.isTokenValid(jwt, userDetails.getUsername())) {
-                final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                if (this.jwtService.isTokenValid(jwt, userDetails.getUsername())) {
+                    final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
 
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (BusinessException ex) {
+            System.out.println("BusinessException: " + ex.getMessage());
+            response.setStatus(ex.getErrorCode().getStatus().value());
+            response.setContentType("application/json");
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", ex.getErrorCode().getCode());
+            errorResponse.put("message", ex.getMessage());
+            errorResponse.put("validationErrorList", null);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        }
     }
 }

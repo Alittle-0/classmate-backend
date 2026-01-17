@@ -26,4 +26,5 @@ public class BeanConfiguration {
         return new ApplicationAuditorAware();
     }
 
+
 }

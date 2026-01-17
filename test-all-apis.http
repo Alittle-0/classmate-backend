@@ -1,0 +1,860 @@
+### ============================================
+### COMPLETE API TEST SUITE
+### Student Management Microservices
+### ============================================
+### 
+### Prerequisites:
+### 1. Start Discovery Server (port 8761)
+### 2. Start Identity Service (port 8081)
+### 3. Start API Gateway (port 8080)
+### 4. Start Academic Service (port 8082)
+### 
+### Testing Order:
+### 1. Health checks
+### 2. Register users
+### 3. Login to get JWT tokens
+### 4. Test authenticated endpoints
+### ============================================
+
+### ============================================
+### VARIABLES
+### ============================================
+
+@baseUrl = http://localhost:8080
+@identityBaseUrl = {{baseUrl}}/api/v1/identity
+@academicBaseUrl = {{baseUrl}}/api/v1/academic
+
+# Tokens - will be updated after login
+@teacherToken = eyJhbGciOiJSUzI1NiJ9.eyJmaXJzdG5hbWUiOiJKb2huIiwicm9sZSI6IlRFQUNIRVIiLCJ0b2tlbl90eXBlIjoiQUNDRVNTX1RPS0VOIiwidXNlcklkIjoiODI5MjY3OTgtMDlmNC00MDI0LTgxNDUtZjk3MWExZDcyODM5IiwiZW1haWwiOiJ0ZWFjaGVyQHNjaG9vbC5jb20iLCJsYXN0bmFtZSI6IkRvZSIsInN1YiI6InRlYWNoZXJAc2Nob29sLmNvbSIsImlhdCI6MTc2ODM1OTY0NywiZXhwIjoxNzY4NDQ2MDQ3fQ.AsDFJAHFWXqsakNA-F1Abqp_IUmslSPObVLwFRD6dvqH1wKUdzgYjTR0JgzmTeTl6u3KYiQxG4CGvZ2cccYXuyqEUJyyp9EIxnqXENb3r0yXCsB31EGJyBV_7zzJQI7sbJnPTytc_UDGjeWVXwZmMaA9pY3KnJMpJ0ajeIcq3QJIU8_y4G9yNAiQJ0fsFb6yupPCtZP6A5_qOJLsMVE42_0H3v5QM1tHkOeEZfPlokVorFjl0OnAvD12ZbI0IM-BSwS45edYiOKrNrI2_iiqwmbFY6qPlXC71CYD8-8ewmsbX5WLSyXbYBKwT_yYLCPAgpFF3CIj_ZonjIugzCT9OA
+@studentToken = eyJhbGciOiJSUzI1NiJ9.eyJmaXJzdG5hbWUiOiJBbGljZSIsInJvbGUiOiJTVFVERU5UIiwidG9rZW5fdHlwZSI6IkFDQ0VTU19UT0tFTiIsInVzZXJJZCI6IjIwM2Y3OWE3LTZkYWEtNDI3NS1hMzA4LWVjZTQ2ZmNhYjY5ZSIsImVtYWlsIjoic3R1ZGVudEBzY2hvb2wuY29tIiwibGFzdG5hbWUiOiJTbWl0aCIsInN1YiI6InN0dWRlbnRAc2Nob29sLmNvbSIsImlhdCI6MTc2ODM1OTY2NSwiZXhwIjoxNzY4NDQ2MDY1fQ.Qlh1C7UnZsdsmzE7S0YVUUWWXc3bP6T_qI24FZv3K7pf5oZXaWYjjDPsTYHh3kkp-H4SjZMlHY0lRFZ91Rv2jLEC02JkvqVM9vIHjYOgKDI9URL7CA0Drd5oZppIvlcGEDz0dfhDE9gUEgZt7LOPganUgtipC2LCgXKwT7pFSEMPLNy3OLBZdel3cRTkDI8Pun91o2KaFHIhwH9vtkpHoMoRqglYxMPEfBo7uCi7THn6i_enDoerPhwmZRy8MAJc-hTP39cZnRWTHr4-gXlQsrpHL3o45Oy6p3tGeIBqSdxnJn8L4nHVgUim4xTt_mUOtTwT-yoh_W9e7Jpyeb9_hA
+@adminToken = your-admin-token-here
+@refreshToken = eyJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiUkVGUkVTSF9UT0tFTiIsInN1YiI6InRlYWNoZXJAc2Nob29sLmNvbSIsImlhdCI6MTc2ODM4MDAzNywiZXhwIjoxNzY4NDY2NDM3fQ.n70ndSsGWKPR5ge8UF1j9Xqrv4-lKi15JY7LNgVVcYS3ZH3WYLouIOIHNTbdIag7qcYyBFnV3MpQl7KJLnnj1TjiqczJ_s0y3bIdEQYwtDNNzC7MloFIAccVh7fXMR65U-9uUuiRfT_uHf0myGbeu4ZZaYAe9JjHIIRclDBk4zpuXQh2grizURkn_U8RMdrk6Otvf3Wgk2W-sTJHKrDa8tP993SOfBrz2ye4ovZDvaHOsQABDDAIlCuZdbALmT_UaCIw58mPjwpYFdw-umIzsS0mRJdZ85wfryWrQG0FOn2rJVm5J7KUxAnA-9gfZftQ3Xa1vFRKE0F_MeB4MJgwzQ
+
+# Test User IDs - will be updated after registration
+@teacherId = 49acb3fc-009c-418d-ae54-ea0b832d72c2
+@studentId = 07016d00-8720-4bce-b546-8b685b487fef
+
+# Test Course IDs
+@courseId = 463a37e3-713a-4415-b607-a5f74a6f5b41
+@inviteCode = KUYRPC^FOH
+
+
+### ============================================
+### SECTION 1: HEALTH CHECKS
+### ============================================
+
+### 1.1 Identity Service Health Check
+GET {{identityBaseUrl}}/health
+Content-Type: application/json
+
+### Expected: 200 OK
+### {
+###   "status": "UP",
+###   "timestamp": "..."
+### }
+
+
+### ============================================
+### SECTION 2: IDENTITY SERVICE - REGISTRATION
+### ============================================
+
+### 2.1 Register Teacher Account
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "teacher@school.com",
+  "role": "TEACHER",
+  "password": "Teacher123@",
+  "confirmPassword": "Teacher123@"
+}
+
+### Expected: 201 Created
+### Note: Save user ID from database for later use
+
+
+### 2.2 Register Student Account
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Alice",
+  "lastname": "Smith",
+  "email": "student@school.com",
+  "role": "STUDENT",
+  "password": "Student123@",
+  "confirmPassword": "Student123@"
+}
+
+### Expected: 201 Created
+
+
+### 2.3 Register Another Student
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Bob",
+  "lastname": "Johnson",
+  "email": "student2@school.com",
+  "role": "STUDENT",
+  "password": "Student123@",
+  "confirmPassword": "Student123@"
+}
+
+### Expected: 201 Created
+
+
+### 2.4 Register Admin Account
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Admin",
+  "lastname": "User",
+  "email": "admin@school.com",
+  "role": "ADMIN",
+  "password": "Admin123@",
+  "confirmPassword": "Admin123@"
+}
+
+### Expected: 201 Created
+
+
+### 2.5 Test Registration Validation - Missing Fields
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "invalid@school.com"
+}
+
+### Expected: 400 Bad Request with validation errors
+
+
+### 2.6 Test Registration - Duplicate Email
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Duplicate",
+  "lastname": "User",
+  "email": "teacher@school.com",
+  "role": "STUDENT",
+  "password": "Test1234567@",
+  "confirmPassword": "Test1234567@"
+}
+
+### Expected: 409 Conflict - Email already exists
+
+
+### ============================================
+### SECTION 3: IDENTITY SERVICE - AUTHENTICATION
+### ============================================
+
+### 3.1 Login as Teacher
+# @name loginTeacher
+POST {{identityBaseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "teacher@school.com",
+  "password": "Teacher123@"
+}
+
+### Expected: 200 OK
+### Response: 
+### {
+###   "accessToken": "eyJhbGc...",
+###   "refreshToken": "eyJhbGc...",
+###   "expiresIn": 900,
+###   "tokenType": "Bearer"
+### }
+### 
+### 👉 COPY the accessToken and paste it in @teacherToken variable above
+
+
+### 3.2 Login as Student
+# @name loginStudent
+POST {{identityBaseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "student@school.com",
+  "password": "Student123@"
+}
+
+### Expected: 200 OK
+### 👉 COPY the accessToken and paste it in @studentToken variable
+
+
+### 3.3 Login as Admin
+# @name loginAdmin
+POST {{identityBaseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@school.com",
+  "password": "Admin123@"
+}
+
+### Expected: 200 OK
+### 👉 COPY the accessToken and paste it in @adminToken variable
+
+
+### 3.4 Test Login - Invalid Credentials
+POST {{identityBaseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "teacher@school.com",
+  "password": "WrongPassword123@"
+}
+
+### Expected: 401 Unauthorized
+
+
+### 3.5 Test Login - Non-existent User
+POST {{identityBaseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "nonexistent@school.com",
+  "password": "Test123@"
+}
+
+### Expected: 401 Unauthorized
+
+
+### ============================================
+### SECTION 4: IDENTITY SERVICE - USER PROFILE
+### ============================================
+
+### 4.1 Get Teacher Profile
+GET {{identityBaseUrl}}/me/
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 200 OK
+### {
+###   "id": "...",
+###   "email": "teacher@school.com",
+###   "firstname": "John",
+###   "lastname": "Doe",
+###   "role": "TEACHER",
+###   "isActive": true
+### }
+
+
+### 4.2 Get Student Profile
+GET {{identityBaseUrl}}/me/
+Authorization: Bearer {{studentToken}}
+
+### Expected: 200 OK
+
+
+### 4.3 Get User Profile by ID (Teacher checking student)
+GET {{identityBaseUrl}}/me/{{studentId}}
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 200 OK
+
+
+###CHECK AGAIN (error: require email)
+### 4.4 Update Profile Information
+PATCH {{identityBaseUrl}}/me/
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "firstname": "John Updated",
+  "lastname": "Doe"
+}
+
+### Expected: 204 No Content
+
+
+### 4.5 Change Password
+POST {{identityBaseUrl}}/me/password
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "Teacher123@",
+  "newPassword": "NewTeacher123@",
+  "confirmPassword": "NewTeacher123@"
+}
+
+### Expected: 204 No Content
+### Note: Remember to login again with new password
+
+
+###CHECK AGAIN (should return error: no token in header)
+### 4.6 Test Profile Access Without Token
+GET {{identityBaseUrl}}/me/
+### Expected: 401 Unauthorized
+
+
+### ============================================
+### SECTION 5: ACADEMIC SERVICE - COURSE MANAGEMENT (TEACHER)
+### ============================================
+
+### 5.1 Create Course (Teacher Only)
+###CHECK AGAIN (should return error message when create duplicated course)
+# @name createCourse
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJmaXJzdG5hbWUiOiJKb2huIiwicm9sZSI6IlRFQUNIRVIiLCJ0b2tlbl90eXBlIjoiQUNDRVNTX1RPS0VOIiwidXNlcklkIjoiYWM3MWExNGMtZTE2Yi00NTY4LTg4ZDktM2ZjYzliNzM0M2E5IiwiZW1haWwiOiJ0ZWFjaGVyQHNjaG9vbC5jb20iLCJsYXN0bmFtZSI6IkRvZSIsInN1YiI6InRlYWNoZXJAc2Nob29sLmNvbSIsImlhdCI6MTc2ODY1ODE3OCwiZXhwIjoxNzY4NzQ0NTc4fQ.yFd86dI-aSV0kVqendzQO4hJ9gLrs1fzuxWKaGKdiut4vHgn4y1Le6yrXVZK0hqE2qytLRGJUWeabfxbqvPGG2_uK6LAEunPeybNG0gUPrZuqKIs-BVJ461XSFtDXwn5TkKSXxN7gqwOPTgSRTyxMtkZKc-bNBXkN39l-JDOSqzA2YAyPF-m5J8EN6vvyBC_rJGbkQJqdlBYCWKY3K-qhewkIM7HQsMUUYBkyv8lMgtjMjOjcqdgh9j56ZWLTZFiKF2RGWy9CSAb9Rjr__b3rR_7gQ3Bl43yFJBBNrusICij9vEZjA4PZjkUTTkrx-PEgOc3PD3EUmMcBKI5de7fRg //{{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "Introduction to Microservice",
+  "description": "Learn how to build scalable microservices with Spring Boot",
+  "subTeacherId": null,
+  "subTeacherName": null
+}
+
+### Expected: 201 Created
+### 👉 Note the course ID from response or database
+
+
+### 5.2 Create Another Course
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "Advanced Java Programming",
+  "description": "Deep dive into Java advanced concepts",
+  "subTeacherId": null,
+  "subTeacherName": null
+}
+
+### Expected: 201 Created
+
+
+### 5.3 Test Create Course - Student Attempting (Should Fail)
+###CHECK AGAIN (should return error message when fail)
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer {{studentToken}}
+Content-Type: application/json
+
+{
+  "name": "Unauthorized Course",
+  "description": "This should fail"
+}
+
+### Expected: 403 Forbidden
+### Message: Access Denied - Student role cannot create courses
+
+
+### 5.4 Test Create Course - No Authentication
+POST {{academicBaseUrl}}/courses/create
+Content-Type: application/json
+
+{
+  "name": "No Auth Course",
+  "description": "This should fail"
+}
+
+### Expected: 401 Unauthorized
+
+
+### 5.5 Test Create Course - Invalid Data
+###CHECK AGAIN (not return error message, just log out)
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": ""
+}
+
+### Expected: 400 Bad Request with validation errors
+
+
+### ============================================
+### SECTION 6: ACADEMIC SERVICE - COURSE RETRIEVAL
+### ============================================
+
+### 6.1 Get All Courses (Any authenticated user)
+GET {{academicBaseUrl}}/courses/all
+Authorization: Bearer {{studentToken}}
+
+### Expected: 200 OK
+### [
+###   {
+###     "id": "...",
+###     "name": "...",
+###     "description": "...",
+###     "createdAt": "...",
+###     "members": [...]
+###   }
+### ]
+
+
+### 6.2.1 Get Course by ID with non-member token (should error)
+###CHECK AGAIN (should return error message, just log out)
+GET {{academicBaseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{studentToken}}
+
+### Expected: 400 Bad Request
+### {
+###   "id": "...",
+###   "name": "...",
+###   "description": "...",
+###   "members": [...],
+###   "createdAt": "..."
+### }
+
+### 6.2.2 Get Course by ID with member token
+###CHECK AGAIN (should return error message, just log out)
+GET {{academicBaseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 200 OK
+### {
+###   "id": "...",
+###   "name": "...",
+###   "description": "...",
+###   "members": [...],
+###   "createdAt": "..."
+### }
+
+
+### 6.3 Get My Courses (Courses where user is member)
+GET {{academicBaseUrl}}/courses/
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 200 OK
+### Returns courses where the authenticated user is a member
+
+
+### 6.4 Test Get Courses - No Authentication
+GET {{academicBaseUrl}}/courses/all
+
+### Expected: 401 Unauthorized
+
+
+### ============================================
+### SECTION 7: ACADEMIC SERVICE - COURSE UPDATES (TEACHER)
+### ============================================
+
+### 7.1 Update Course Information (Teacher Only)
+PATCH {{academicBaseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "Introduction to Microservices - Updated",
+  "description": "Updated description with more details"
+}
+
+### Expected: 204 No Content
+
+
+### 7.2 Test Update Course - Student Attempting (Should Fail)
+PATCH {{academicBaseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{studentToken}}
+Content-Type: application/json
+
+{
+  "name": "Hacked Name",
+  "description": "This should fail"
+}
+
+### Expected: 403 Forbidden
+
+
+### 7.3 Test Update Course - Non-existent Course
+PATCH {{academicBaseUrl}}/courses/non-existent-id
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "Updated Name"
+}
+
+### Expected: 404 Not Found
+
+
+### ============================================
+### SECTION 8: ACADEMIC SERVICE - COURSE MEMBERSHIP
+### ============================================
+
+### 8.1 Join Course via Invite Code (Student)
+PATCH {{academicBaseUrl}}/courses/invite?code={{inviteCode}}
+Authorization: Bearer {{studentToken}}
+
+### Expected: 204 No Content
+### Student is added to the course
+
+
+### 8.2 Test Join Course - Invalid Invite Code
+PATCH {{academicBaseUrl}}/courses/invite?code=INVALID_CODE
+Authorization: Bearer {{studentToken}}
+
+### Expected: 404 Not Found
+### Message: Invalid invite code
+
+
+### 8.3 Remove Member from Course (Teacher Only)
+PATCH {{academicBaseUrl}}/courses/{{courseId}}/{{studentId}}
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 204 No Content
+### Student is removed from course
+
+
+### 8.4 Test Remove Member - Student Attempting (Should Fail)
+PATCH {{academicBaseUrl}}/courses/{{courseId}}/{{studentId}}
+Authorization: Bearer {{studentToken}}
+
+### Expected: 403 Forbidden
+
+
+### 8.5 Leave Course (Student Only)
+PATCH {{academicBaseUrl}}/courses/{{courseId}}/leave
+Authorization: Bearer {{studentToken}}
+
+### Expected: 204 No Content
+### Student leaves the course
+
+
+### 8.6 Test Leave Course - Teacher Attempting (Should Fail)
+PATCH {{academicBaseUrl}}/courses/{{courseId}}/leave
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 403 Forbidden
+### Only students can leave courses
+
+
+### ============================================
+### SECTION 9: ACADEMIC SERVICE - COURSE DELETION (TEACHER)
+### ============================================
+
+### 9.1 Delete Course (Teacher Only)
+DELETE {{academicBaseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 204 No Content
+### Course is permanently deleted
+
+
+### 9.2 Test Delete Course - Student Attempting (Should Fail)
+DELETE {{academicBaseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{studentToken}}
+
+### Expected: 403 Forbidden
+
+
+### 9.3 Test Delete Course - Non-existent Course
+DELETE {{academicBaseUrl}}/courses/non-existent-id
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 404 Not Found
+
+
+### 9.4 Test Delete Course - No Authentication
+DELETE {{academicBaseUrl}}/courses/{{courseId}}
+
+### Expected: 401 Unauthorized
+
+
+### ============================================
+### SECTION 10: IDENTITY SERVICE - TOKEN MANAGEMENT
+### ============================================
+
+### 10.1 Refresh Access Token
+POST {{identityBaseUrl}}/auth/refresh
+Cookie: refreshToken={{refreshToken}}
+
+### Expected: 200 OK
+### Returns new accessToken and refreshToken
+
+
+### 10.2 Test Refresh - Invalid Token
+POST {{identityBaseUrl}}/auth/refresh
+Cookie: refreshToken=invalid-token
+
+### Expected: 401 Unauthorized
+
+
+### 10.3 Logout
+POST {{identityBaseUrl}}/auth/logout
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 204 No Content
+### Clears refresh token cookie
+
+
+### ============================================
+### SECTION 11: IDENTITY SERVICE - ACCOUNT MANAGEMENT
+### ============================================
+
+### 11.1 Deactivate Account
+POST {{identityBaseUrl}}/me/deactivate
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 204 No Content
+### Account is deactivated (soft delete)
+
+
+### 11.2 Reactivate Account
+POST {{identityBaseUrl}}/me/reactivate
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 204 No Content
+### Account is reactivated
+
+
+### 11.3 Delete Account (Permanent)
+DELETE {{identityBaseUrl}}/me/delete
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 204 No Content
+### Account is permanently deleted
+
+
+### ============================================
+### SECTION 12: ERROR SCENARIOS - SECURITY TESTING
+### ============================================
+
+### 12.1 Test Invalid JWT Token
+GET {{academicBaseUrl}}/courses/all
+Authorization: Bearer invalid.jwt.token
+
+### Expected: 401 Unauthorized
+
+
+### 12.2 Test Expired JWT Token
+GET {{academicBaseUrl}}/courses/all
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.expired.token
+
+### Expected: 401 Unauthorized
+
+
+### 12.3 Test Malformed Authorization Header
+GET {{academicBaseUrl}}/courses/all
+Authorization: InvalidFormat
+
+### Expected: 401 Unauthorized
+
+
+### 12.4 Test Missing Authorization Header
+GET {{academicBaseUrl}}/courses/all
+
+### Expected: 401 Unauthorized
+
+
+### 12.5 Test Role-Based Access - Teacher Endpoint as Student
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer {{studentToken}}
+Content-Type: application/json
+
+{
+  "name": "Unauthorized",
+  "description": "Should fail"
+}
+
+### Expected: 403 Forbidden
+
+
+### 12.6 Test Role-Based Access - Student Endpoint as Teacher
+PATCH {{academicBaseUrl}}/courses/{{courseId}}/leave
+Authorization: Bearer {{teacherToken}}
+
+### Expected: 403 Forbidden
+
+
+### ============================================
+### SECTION 13: VALIDATION TESTING
+### ============================================
+
+### 13.1 Test Email Validation - Invalid Format
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Test",
+  "lastname": "User",
+  "email": "invalid-email",
+  "role": "STUDENT",
+  "password": "Test123@",
+  "confirmPassword": "Test123@"
+}
+
+### Expected: 400 Bad Request
+
+
+### 13.2 Test Password Validation - Too Weak
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Test",
+  "lastname": "User",
+  "email": "test@school.com",
+  "role": "STUDENT",
+  "password": "weak",
+  "confirmPassword": "weak"
+}
+
+### Expected: 400 Bad Request
+
+
+### 13.3 Test Course Name Validation - Empty
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": "Valid description"
+}
+
+### Expected: 400 Bad Request
+
+
+### 13.4 Test Course Description Validation - Empty
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "Valid Name",
+  "description": ""
+}
+
+### Expected: 400 Bad Request
+
+
+### ============================================
+### SECTION 14: INTEGRATION TESTING
+### ============================================
+
+### 14.1 Complete Flow: Register → Login → Create Course → Join Course
+### Step 1: Register new student
+POST {{identityBaseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Integration",
+  "lastname": "Test",
+  "email": "integration@school.com",
+  "role": "STUDENT",
+  "password": "Test123@",
+  "confirmPassword": "Test123@"
+}
+
+### Step 2: Login with new student
+# @name integrationLogin
+POST {{identityBaseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "integration@school.com",
+  "password": "Test123@"
+}
+
+### Step 3: Get profile to verify
+GET {{identityBaseUrl}}/me/
+Authorization: Bearer {{integrationLogin.response.body.accessToken}}
+
+### Step 4: Get all courses
+GET {{academicBaseUrl}}/courses/all
+Authorization: Bearer {{integrationLogin.response.body.accessToken}}
+
+### Step 5: Join a course
+PATCH {{academicBaseUrl}}/courses/invite/{{inviteCode}}
+Authorization: Bearer {{integrationLogin.response.body.accessToken}}
+
+
+### ============================================
+### SECTION 15: PERFORMANCE TESTING
+### ============================================
+
+### 15.1 Multiple Concurrent Course Retrievals
+### Run this request multiple times to test performance
+GET {{academicBaseUrl}}/courses/all
+Authorization: Bearer {{studentToken}}
+
+
+### 15.2 Bulk Course Creation (for load testing)
+### Create multiple courses in sequence
+POST {{academicBaseUrl}}/courses/create
+Authorization: Bearer {{teacherToken}}
+Content-Type: application/json
+
+{
+  "name": "Course {{$randomInt}}",
+  "description": "Performance test course"
+}
+
+
+### ============================================
+### TEST SUMMARY CHECKLIST
+### ============================================
+###
+### ✅ Health Checks
+###    - [✅] Identity service health
+###
+### ✅ Registration (Identity Service)
+###    - [✅] Register teacher
+###    - [✅] Register student
+###    - [ ] Register admin
+###    - [✅] Validation errors
+###    - [✅] Duplicate email check
+###
+### ✅ Authentication (Identity Service)
+###    - [✅] Login teacher
+###    - [✅] Login student
+###    - [ ] Login admin
+###    - [✅] Invalid credentials
+###    - [✅] Non-existent user
+###
+### ✅ User Profile (Identity Service)
+###    - [✅] Get own profile
+###    - [✅] Get user by ID
+###    - [ ] Update profile
+###    - [ ] Change password
+###    - [ ] Unauthorized access
+###
+### ✅ Course Management (Academic Service)
+###    - [✅] Create course (teacher)
+###    - [ ] Get all courses
+###    - [✅] Get course by ID
+###    - [✅] Update course (teacher)
+###    - [✅] Delete course (teacher)
+###    - [✅] Role-based access control
+###
+### ✅ Course Membership (Academic Service)
+###    - [✅] Join via invite code
+###    - [✅] Remove member (teacher)
+###    - [✅] Leave course (student)
+###    - [✅] Permission checks
+###
+### ✅ Token Management (Identity Service)
+###    - [✅] Refresh token
+###    - [✅] Logout
+###
+### ✅ Account Management (Identity Service)
+###    - [ ] Deactivate account
+###    - [ ] Reactivate account
+###    - [ ] Delete account
+###
+### ✅ Security Testing
+###    - [✅] Invalid JWT
+###    - [✅] Expired JWT
+###    - [✅] Missing auth header
+###    - [✅] Role violations
+###
+### ✅ Validation Testing
+###    - [✅] Email validation
+###    - [✅] Password validation
+###    - [✅] Required fields
+###
+### ============================================
+### END OF TEST SUITE
+### ============================================

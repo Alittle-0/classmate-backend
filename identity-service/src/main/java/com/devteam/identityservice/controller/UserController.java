@@ -1,14 +1,15 @@
 package com.devteam.identityservice.controller;
 
+import com.devteam.identityservice.dto.response.UserResponseDTO;
 import com.devteam.identityservice.model.User;
-import com.devteam.identityservice.dto.PasswordChangeRequestDTO;
-import com.devteam.identityservice.dto.ProfileUpdateRequestDTO;
+import com.devteam.identityservice.dto.request.PasswordChangeRequestDTO;
+import com.devteam.identityservice.dto.request.ProfileUpdateRequestDTO;
 import com.devteam.identityservice.service.UserServiceInterface;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +19,21 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "User", description = "Identify - User Service")
 public class UserController {
 
-    @Autowired
     private final UserServiceInterface userService;
 
-    @PatchMapping
+    @GetMapping("/")
+    public ResponseEntity<UserResponseDTO> getProfile(
+            final Authentication principal) {
+        return ResponseEntity.ok(this.userService.getProfile(getUserId(principal)));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseDTO> getProfile(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getProfile(userId));
+    }
+
+
+    @PatchMapping("/")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateProfileInformation(
             @RequestBody @Valid final ProfileUpdateRequestDTO request,

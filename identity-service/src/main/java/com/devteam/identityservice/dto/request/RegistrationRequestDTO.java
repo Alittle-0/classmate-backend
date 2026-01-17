@@ -1,7 +1,6 @@
-package com.devteam.identityservice.dto;
+package com.devteam.identityservice.dto.request;
 
 import com.devteam.identityservice.model.Role;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;

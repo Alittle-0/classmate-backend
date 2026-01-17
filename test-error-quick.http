@@ -1,0 +1,76 @@
+### Quick Error Response Tests
+### Test các error codes đã được sửa
+
+### ==================== TEST 1: COURSE_NOTFOUND ====================
+GET http://localhost:8082/api/v1/course/non-existent-course-id-12345
+
+### Expected Response (404):
+# {
+#   "code": "COURSE_NOT_FOUND",
+#   "message": "Course not found with id: non-existent-course-id-12345"
+# }
+
+###
+
+### ==================== TEST 2: ASSIGNMENT_NOTFOUND ====================
+GET http://localhost:8083/api/v1/grading/assignments/non-existent-assignment-id-999
+
+### Expected Response (404):
+# {
+#   "code": "ASSIGNMENT_NOT_FOUND",
+#   "message": "Assignment not found with id: non-existent-assignment-id-999"
+# }
+
+###
+
+### ==================== TEST 3: LECTURE_NOTFOUND ====================
+GET http://localhost:8083/api/v1/grading/lectures/non-existent-lecture-id-888
+
+### Expected Response (404):
+# {
+#   "code": "LECTURE_NOT_FOUND",
+#   "message": "Lecture not found with id: non-existent-lecture-id-888"
+# }
+
+###
+
+### ==================== TEST 4: SUBMISSION_NOTFOUND ====================
+GET http://localhost:8083/api/v1/grading/submissions/non-existent-submission-id-777
+
+### Expected Response (404):
+# {
+#   "code": "SUBMISSION_NOT_FOUND",
+#   "message": "Submission not found with id: non-existent-submission-id-777"
+# }
+
+###
+
+### ==================== TEST 5: INTERNAL_EXCEPTION (Academic) ====================
+# This will be caught by the global exception handler
+
+###
+
+### ==================== TEST 6: INTERNAL_EXCEPTION (Grading) ====================
+# This will be caught by the global exception handler
+
+###
+
+### ==================== VALIDATION ERROR TEST ====================
+POST http://localhost:8082/api/v1/course/create
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": "This should fail validation"
+}
+
+### Expected Response (400):
+# {
+#   "validationErrorList": [
+#     {
+#       "field": "name",
+#       "code": "VALIDATION.COURSE.NAME.NOT_BLANK",
+#       "message": "VALIDATION.COURSE.NAME.NOT_BLANK"
+#     }
+#   ]
+# }

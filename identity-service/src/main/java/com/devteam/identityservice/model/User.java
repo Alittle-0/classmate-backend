@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -30,22 +29,16 @@ public class User implements UserDetails {
     private String id;
 
     @Column(name = "FIRST_NAME", nullable = false)
-    private String firstName;
+    private String firstname;
 
     @Column(name = "LAST_NAME", nullable = false)
-    private String lastName;
+    private String lastname;
 
 //    @Column(name = "PROFILE_PICTURE", nullable = false)
 //    private String profilePicture = "https://www.gravatar.com/avatar/";
 
-//    @Column(name = "PHONE_NUMBER", nullable = false, unique = true)
-//    private String phoneNumber;
-
     @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
-
-    @Column(name = "DATE_OF_BIRTH", nullable = true)
-    private LocalDate dateOfBirth;
 
     @Column(name = "USERNAME", nullable = true, unique = true)
     private String username;
@@ -69,9 +62,8 @@ public class User implements UserDetails {
     @Column(name = "IS_CREDENTIALS_EXPIRED", nullable = false)
     private boolean expired = false;
 
-    @Builder.Default
     @Column(name = "IS_ACTIVE", nullable = false)
-    private boolean active = false;
+    private boolean active;
 
     @Builder.Default
     @Column(name = "CREDENTIALS_EXPIRED", nullable = false)
@@ -95,7 +87,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == null) return List.of();
-        return List.of(new SimpleGrantedAuthority(this.role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+this.role.name()));
     }
 
     @Override

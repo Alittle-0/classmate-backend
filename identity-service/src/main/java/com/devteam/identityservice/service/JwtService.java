@@ -1,19 +1,24 @@
 package com.devteam.identityservice.service;
 
+import com.devteam.identityservice.exception.BusinessException;
+import com.devteam.identityservice.exception.ErrorCode;
+import com.devteam.identityservice.model.User;
 import com.devteam.identityservice.security.KeyUtils;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class JwtService {
 
@@ -27,16 +32,24 @@ public class JwtService {
     @Value("${app.security.jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    public JwtService() throws Exception {
+    private final UserService userService;
+
+    public JwtService(UserService userService) throws Exception {
         this.privateKey = KeyUtils.loadPrivateKey("keys/local-only/private-secret.pem");
         this.publicKey = KeyUtils.loadPublicKey("keys/local-only/public-secret.pem");
+        this.userService = userService;
     }
 
-    public String generateAccessToken(final String username) {
+    public String generateAccessToken(final User user) {
         final Map<String, Object> claims = new HashMap<>();
         claims.put(TOKEN_TYPE, "ACCESS_TOKEN");
-        System.out.println("Still run generateAccessToken: " + username);
-        return createToken(username, claims, this.accessTokenExpiration);
+        claims.put("role", user.getRole());
+        claims.put("userId", user.getId());
+        claims.put("email", user.getEmail());
+        claims.put("firstname", user.getFirstname());
+        claims.put("lastname", user.getLastname());
+
+        return createToken(user.getUsername(), claims, this.accessTokenExpiration);
     }
 
     public String generateRefreshToken(final String username) {
@@ -46,16 +59,28 @@ public class JwtService {
     }
 
     public String refreshAccessToken(final String refreshToken) {
-        final Claims claims = extractClaims(refreshToken);
-        if (!"REFRESH_TOKEN".equals(claims.get(TOKEN_TYPE)))
-            throw new RuntimeException("Invalid token type");
-        if (isTokenExpired(refreshToken)) {
-            throw new RuntimeException("Refresh token expired");
+        try {
+            final Claims claims = extractClaims(refreshToken);
+            final String tokenType = (String) claims.get(TOKEN_TYPE);
+
+            if (!"REFRESH_TOKEN".equals(tokenType)) {
+                throw new BusinessException(ErrorCode.INVALID_TOKEN_TYPE, "REFRESH_TOKEN", tokenType);
+            }
+
+            if (isTokenExpired(refreshToken)) {
+                throw new BusinessException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+            }
+
+            final String name = claims.getSubject();
+            final User user = (User) userService.loadUserByUsername(name);
+
+            return generateAccessToken(user);
+        } catch (BusinessException e) {
+            if (e.getErrorCode() == ErrorCode.TOKEN_EXPIRED) {
+                throw new BusinessException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+            }
+            throw e;
         }
-
-        final String name = claims.getSubject();
-
-        return generateAccessToken(name);
 
     }
 
@@ -64,7 +89,6 @@ public class JwtService {
             final Map<String, Object> clams,
             final long expiration
             ) {
-        System.out.println("Still run createToken: " + username);
         return Jwts.builder()
                 .claims(clams)
                 .subject(username)
@@ -97,8 +121,12 @@ public class JwtService {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.error("JWT expired: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid JWT token: ", e);
+            log.error("Invalid JWT: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
     }
 
