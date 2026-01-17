@@ -1,16 +1,18 @@
 package com.devteam.identityservice.service;
 
-import com.devteam.identityservice.dto.AuthenticationRequestDTO;
-import com.devteam.identityservice.dto.AuthenticationResponseDTO;
-import com.devteam.identityservice.dto.RefreshRequest;
-import com.devteam.identityservice.dto.RegistrationRequestDTO;
+import com.devteam.identityservice.dto.request.AuthenticationRequestDTO;
+import com.devteam.identityservice.dto.response.AuthenticationResponseDTO;
+import com.devteam.identityservice.dto.request.RegistrationRequestDTO;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthenticationServiceInterface {
 
-    AuthenticationResponseDTO login(AuthenticationRequestDTO requestDTO);
+    AuthenticationResponseDTO login(AuthenticationRequestDTO requestDTO, HttpServletResponse response);
 
     void register(RegistrationRequestDTO requestDTO);
 
-    AuthenticationResponseDTO refreshToken(RefreshRequest request);
+    AuthenticationResponseDTO refreshToken(String refreshToken, HttpServletResponse response);
+
+    void logout(HttpServletResponse response);
 
 }

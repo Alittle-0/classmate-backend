@@ -1,14 +1,10 @@
 ### GET request to server
 GET http://localhost:8080/api/v1/identity/health
 
-### POST refresh token
+### POST refresh token (reads refreshToken from cookie automatically)
 POST http://localhost:8080/api/v1/identity/auth/refresh
+Cookie: refreshToken=eyJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiUkVGUkVTSF9UT0tFTiIsInN1YiI6ImFiY0BnbWFpbC5jb20iLCJpYXQiOjE3NjU0NjEwNjksImV4cCI6MTc2NTQ2MTEyOX0.oAr8llQVC6QUsPeY6rxxfdU6_ZIpKuEblFDp2QejydktG3GrbFfnNlolSkmXorKC9PtIcm7y72LpuRSWXpv0H-kdiiToJ39IlgsrTPjuQBVhGuwn9ptUKyrKUTSU9UM3-Id-MPoeRnOTmCToSzlESrGVvkoosFJ5mA4AOiJFIYX7A0worIWEfwsJKr_iYvx1Gqf3-Coy5ruIcvOXaZX0U1fpWEG1SMxR1cxaWJGzEwUht2AxhEO_U1lGOyen_dWXMbJ5jcCKeUtXWO5x_Fv0qAqgld2nKs6qfn_UkXYkrLVt5UcHMerUG4_WU_B_8l_3bsw--do3x9oPPXV-ucwNoA
 Content-Type: application/json
-
-{
-  "refreshToken": "eyJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiUkVGUkVTSF9UT0tFTiIsInN1YiI6ImFiY0BnbWFpbC5jb20iLCJpYXQiOjE3NjUxNzIzOTcsImV4cCI6MTc2NTI1ODc5N30.nCaxn0yDY_DU_oyKxbPD0lHeuYVXOAEfe_2u1CgxregklgpnEE9Praf9xcsyDktaINqprYoiIMorKViYVGbw2TZ9B2Tbvz-PmAj-NSmGE_vGmjst3cbKkUg3ybVB193Ii9LgNXP3IDJ6dLBIbu10ucfeFVjhTPX2RLsSj1Q02LE5Zik8SR1hCU-s5xKJyfmp_xuOg5H1OMc84WcKJVJ87202BUKlZKosn_19ZtLyH0QSGWjptFrtJeN7UMofwEsa3D-t9AuzrfIA0LuQYk7aMHtH81LWEe1F6xfjESK07AGDCoDs8w5c02D1ayhNR64vJRib8yEATsDjcolfp8Fy5g"
-
-}
 
 ### POST login
 POST http://localhost:8080/api/v1/identity/auth/login
@@ -18,3 +14,25 @@ Content-Type: application/json
   "email": "abc@gmail.com",
   "password": "Test123456789@_"
 }
+
+### POST first user role student
+POST http://localhost:8081/api/v1/identity/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Michael",
+  "lastname": "Dang",
+  "email": "abc@gmail.com",
+  "role": "STUDENT",
+  "password": "Test123456789@_",
+  "confirmPassword": "Test123456789@_"
+}
+
+### Logout - Clear refresh token from cookies
+POST http://localhost:8080/api/v1/identity/auth/logout
+Content-Type: application/json
+
+###
+GET http://localhost:8080/api/v1/identity/me/
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiQUNDRVNTX1RPS0VOIiwic3ViIjoiYWJjQGdtYWlsLmNvbSIsImlhdCI6MTc2NTQ2MTYyNywiZXhwIjoxNzY1NDYxNjg3fQ.HVYECfIfrAoLhdDDBzRQ47GSGa0DdlHvj8kHEEM3z_0NG47pesZ-IUIA1Uj6dmGvrEi9jCEn9hQEbsu8-WvJdWCVGa-y-8XufnMfGB3oXnNkH3thUupealKpw93G9ETXmkIPcw9AxImTX3KzKuJSIjVDoUf1-EuiLX6lVXiKCEFfrURxR6VpzOGYtnQQ7SKis0FrG7B2G_GheHzxHn-SkPDAHD7XWZyEw7vpcwN0LTW7VvaAW-ioXvoLpvTbzMvwtsVNDSfolemel-FR1rdD-UtgPwuwkKrdewucNG90f-95Xnn-enVpkMW0Ih_8OvhLHTNmLBLHSsTv2IHdDMj5DQ
+Content-Type: application/json

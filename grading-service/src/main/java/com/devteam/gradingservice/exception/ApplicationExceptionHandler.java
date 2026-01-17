@@ -1,8 +1,6 @@
 package com.devteam.gradingservice.exception;
 
-import com.devteam.academicservice.dto.response.ErrorResponseDTO;
-import com.devteam.academicservice.exception.BusinessException;
-import com.devteam.academicservice.exception.ErrorCode;
+import com.devteam.gradingservice.dto.response.ErrorResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestControllerAdvice(basePackages = "com.devteam.identityservice")
+@RestControllerAdvice(basePackages = "com.devteam.gradingservice")
 @RequiredArgsConstructor
 @Slf4j
 public class ApplicationExceptionHandler {
@@ -36,6 +34,23 @@ public class ApplicationExceptionHandler {
                         HttpStatus.BAD_REQUEST)
                 .body(body);
 
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorResponseDTO> handleException(final FileStorageException exception) {
+        final ErrorResponseDTO body = ErrorResponseDTO.builder()
+                .code(exception.getErrorCode().getCode())
+                .message(exception.getMessage())
+                .build();
+
+        log.info("File storage exception: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return ResponseEntity.status(exception.getErrorCode()
+                        .getStatus() != null ?
+                        exception.getErrorCode().getStatus() :
+                        HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(body);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

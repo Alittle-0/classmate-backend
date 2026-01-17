@@ -1,10 +1,11 @@
 package com.devteam.identityservice.service;
 
+import com.devteam.identityservice.dto.response.UserResponseDTO;
 import com.devteam.identityservice.exception.BusinessException;
 import com.devteam.identityservice.exception.ErrorCode;
 import com.devteam.identityservice.repository.UserRepository;
-import com.devteam.identityservice.dto.PasswordChangeRequestDTO;
-import com.devteam.identityservice.dto.ProfileUpdateRequestDTO;
+import com.devteam.identityservice.dto.request.PasswordChangeRequestDTO;
+import com.devteam.identityservice.dto.request.ProfileUpdateRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import com.devteam.identityservice.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,19 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
+    public UserResponseDTO getProfile(String userId) {
+        final User user = findUserById(userId);
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .role(user.getRole())
+                .active(user.isActive())
+                .build();
+    }
+
+    @Override
     public void updateProfileInformation(ProfileUpdateRequestDTO request, String userId) {
         final User savedUser = findUserById(userId);
         this.userMapper.mergerUserInfo(savedUser, request);
@@ -72,6 +86,7 @@ public class UserService implements UserServiceInterface {
         }
 
         user.setEnabled(false);
+        user.setActive(false);
         this.userRepository.save(user);
     }
 
@@ -84,15 +99,15 @@ public class UserService implements UserServiceInterface {
         }
 
         user.setEnabled(true);
+        user.setActive(true);
         this.userRepository.save(user);
     }
 
 //    Not use this
     @Override
     public void deleteAccount(String userId) {
-//        final User user = findUserById(userId);
-//
-//        this.userRepository.delete(user);
+        final User user = findUserById(userId);
+        this.userRepository.delete(user);
     }
 
 }

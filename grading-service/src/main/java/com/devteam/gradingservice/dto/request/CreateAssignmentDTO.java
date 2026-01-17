@@ -23,9 +23,6 @@ public class CreateAssignmentDTO {
     @NotBlank(message = "VALIDATION.ASSIGNMENT.COURSE_ID.NOT_BLANK")
     private String courseId;
 
-    @NotBlank(message = "VALIDATION.ASSIGNMENT.CREATE_BY.NOT_BLANK")
-    private String createBy;
-
     @NotNull(message = "VALIDATION.ASSIGNMENT.SUBMISSION_DATE.NOT_BLANK")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime submissionDate;

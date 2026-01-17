@@ -1,4 +1,4 @@
-package com.devteam.identityservice.dto;
+package com.devteam.identityservice.dto.response;
 
 import lombok.*;
 

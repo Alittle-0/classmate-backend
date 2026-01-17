@@ -33,8 +33,6 @@ public class SecurityConfiguration {
             "/api/v1/identity/swagger-ui.html"
     };
 
-    private static final String HEALTH_CHECK_URL = "/api/v1/identity/health";
-
     private final JwtFilter jwtFilter;
 
     public SecurityConfiguration(JwtFilter jwtFilter) {
@@ -48,7 +46,6 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
-//                        .requestMatchers(HEALTH_CHECK_URL).permitAll()
                         .anyRequest()
                         .authenticated()
                 )
