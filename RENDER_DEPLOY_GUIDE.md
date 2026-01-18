@@ -366,7 +366,7 @@ ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
    PORT=8761
    ```
 5. Click **"Create Web Service"**
-6. **⚠️ Đợi deploy xong và copy URL** (ví dụ: `https://discovery-server-xxxx.onrender.com`)
+6. **⚠️ Đợi deploy xong và copy URL** (ví dụ: `https://classmate-discovery-server.onrender.com`)
 
 ### 4.2. Deploy Identity Service
 
@@ -379,7 +379,7 @@ ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
 
    ```
    PORT=8081
-   DATABASE_URL=jdbc:postgresql://[INTERNAL_HOST]/school_identity_db
+   DATABASE_URL=jdbc:postgresql://@dpg-d5lv02cmrvns73epukqg-a/school_identity_db
    DATABASE_USER=[your_db_user]
    DATABASE_PASSWORD=[your_db_password]
    EUREKA_URL=https://discovery-server-xxxx.onrender.com/eureka/

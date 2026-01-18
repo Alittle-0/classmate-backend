@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,12 @@ public class AuthenticationService implements AuthenticationServiceInterface{
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    @Value("${cookie.secure:false}")
+    private boolean cookieSecure;
+
+    @Value("${cookie.same-site:Lax}")
+    private String cookieSameSite;
 
     @Autowired
     public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, UserRepository userRepository, UserMapper userMapper) {
@@ -48,8 +55,8 @@ public class AuthenticationService implements AuthenticationServiceInterface{
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
             .httpOnly(true)
-            .secure(false)
-            .sameSite("Lax")
+            .secure(cookieSecure)
+            .sameSite(cookieSameSite)
             .path("/")
             .build();
 
@@ -84,8 +91,8 @@ public class AuthenticationService implements AuthenticationServiceInterface{
         // Keep the refresh token in cookie
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
             .httpOnly(true)
-            .secure(false)
-            .sameSite("Lax")
+            .secure(cookieSecure)
+            .sameSite(cookieSameSite)
             .path("/")
             .build();
         response.addHeader("Set-Cookie", cookie.toString());
@@ -118,8 +125,8 @@ public class AuthenticationService implements AuthenticationServiceInterface{
     public void logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
             .httpOnly(true)
-            .secure(false)
-            .sameSite("Lax")
+            .secure(cookieSecure)
+            .sameSite(cookieSameSite)
             .path("/")
             .maxAge(0)
             .build();
