@@ -10,13 +10,3 @@ services:
     volumes:
       - ./postgres/postgres-data:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: school-rabbitmq
-    ports:
-      - "5672:5672"   # Port kết nối của Spring
-      - "15672:15672" # Port trang quản lý web
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
